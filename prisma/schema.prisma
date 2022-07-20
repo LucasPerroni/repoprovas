@@ -28,6 +28,7 @@ model Categories {
   name String @unique
 
   Tests Tests[]
+
   @@map("categories")
 }
 
@@ -48,6 +49,7 @@ model Teachers {
   name String @unique
 
   TeacherDisciplines TeacherDisciplines[]
+
   @@map("teachers")
 }
 
@@ -58,6 +60,7 @@ model Disciplines {
   term   Terms  @relation(fields: [termId], references: [id])
 
   TeacherDisciplines TeacherDisciplines[]
+
   @@map("disciplines")
 }
 
@@ -69,6 +72,8 @@ model TeacherDisciplines {
   discipline   Disciplines @relation(fields: [disciplineId], references: [id])
 
   Tests Tests[]
+
+  @@unique([teacherId, disciplineId])
   @@map("teacherDisciplines")
 }
 
@@ -77,5 +82,6 @@ model Terms {
   number Int @unique
 
   Disciplines Disciplines[]
+
   @@map("terms")
 }

@@ -3,13 +3,13 @@ import supertest from "supertest"
 import { prisma } from "../src/config/database.js"
 import app from "../src/app.js"
 
-beforeAll(async () => {
+beforeEach(async () => {
   const email = "randomname@gmail.com"
 
   await prisma.$executeRaw`DELETE FROM users WHERE email = ${email}`
 })
 
-afterAll(async () => {
+afterEach(async () => {
   await prisma.$disconnect()
 })
 
