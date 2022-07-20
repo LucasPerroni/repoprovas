@@ -31,5 +31,22 @@ $ npm run dev
 ## 🚀 API:
 
 ```yml
+POST /signup
+    - Route to sign up
+    - headers: {}
+    - body: {
+        "email": "lorem@gmail.com",
+        "password": "loremipsum" (min 6),
+        "confirmPassword": "loremipsum" (equal password)
+    }
+```
 
+```yml
+POST /signin
+    - Route to sign in
+    - headers: {}
+    - body: {
+        "email": "lorem@gmail.com",
+        "password": "loremipsum" (min 6)
+    }
 ```
