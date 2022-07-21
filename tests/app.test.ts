@@ -148,3 +148,23 @@ describe("POST /tests", () => {
     expect(test).toBeNull()
   })
 })
+
+describe("GET /tests", () => {
+  it("return 200 and array of tests", async () => {
+    const token = await testsFactory.createToken()
+    await testsFactory.createTests(token)
+
+    const response = await supertest(app).get("/tests").set("Authorization", `Bearer ${token}`)
+
+    expect(response.status).toBe(200)
+    expect(response.body.tests).not.toBeUndefined()
+    expect(response.body.tests[1].Disciplines[0].TeacherDisciplines[0].Tests[0]).not.toBeUndefined()
+  })
+
+  it("return 401 without token", async () => {
+    const response = await supertest(app).get("/tests")
+
+    expect(response.status).toBe(401)
+    expect(response.body.tests).toBeUndefined()
+  })
+})

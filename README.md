@@ -63,3 +63,10 @@ POST /tests (authenticated)
         "teacher": "loremipsum"
     }
 ```
+
+```yml
+GET /tests (authenticated)
+    - Route to get tests by discipline
+    - headers: { "Authorization": "Bearer $token"}
+    - body: {}
+```

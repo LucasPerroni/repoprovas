@@ -29,12 +29,45 @@ async function getTeacherDisciplineByNames(teacher: string, discipline: string) 
   return teacherDiscipline
 }
 
+async function getTestsByDiscipline() {
+  const tests = await prisma.terms.findMany({
+    select: {
+      id: true,
+      number: true,
+      Disciplines: {
+        select: {
+          id: true,
+          name: true,
+          TeacherDisciplines: {
+            select: {
+              teacher: {
+                select: { name: true },
+              },
+              Tests: {
+                select: {
+                  id: true,
+                  name: true,
+                  pdfUrl: true,
+                  category: { select: { id: true } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+
+  return tests
+}
+
 const testsRepository = {
   createTest,
   getTeacherByName,
   getDisciplineByName,
   getCategoryByName,
   getTeacherDisciplineByNames,
+  getTestsByDiscipline,
 }
 
 export default testsRepository

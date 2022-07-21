@@ -26,9 +26,15 @@ async function createToken() {
   return response.body.token
 }
 
+async function createTests(token: string) {
+  const data = createTestData()
+  await supertest(app).post("/tests").send(data).set("Authorization", `Bearer ${token}`)
+}
+
 const testsFactory = {
   createTestData,
   createToken,
+  createTests,
 }
 
 export default testsFactory
