@@ -1,12 +1,15 @@
 import supertest from "supertest"
 
-import { prisma } from "../src/config/database.js"
 import app from "../src/app.js"
+import { prisma } from "../src/config/database.js"
 import userFactory from "./factory/userFactory.js"
+import testsFactory from "./factory/testsFactory.js"
 
 beforeEach(async () => {
   const email = "randomname@gmail.com"
   await prisma.$executeRaw`DELETE FROM users WHERE email = ${email}`
+
+  await prisma.$executeRaw`DELETE FROM tests`
 })
 
 afterEach(async () => {
@@ -16,6 +19,8 @@ afterEach(async () => {
 afterAll(async () => {
   const email = "randomname@gmail.com"
   await prisma.$executeRaw`DELETE FROM users WHERE email = ${email}`
+
+  await prisma.$executeRaw`DELETE FROM tests`
 })
 
 describe("POST /signup", () => {
@@ -79,5 +84,67 @@ describe("POST /signin", () => {
     const response = await supertest(app).post("/signin").send(data)
     expect(response.status).toBe(401)
     expect(response.body.token).toBeUndefined()
+  })
+})
+
+describe("POST /tests", () => {
+  it("create a test with status 201", async () => {
+    const token = await testsFactory.createToken()
+    const data = testsFactory.createTestData()
+
+    const response = await supertest(app).post("/tests").send(data).set("Authorization", `Bearer ${token}`)
+    const test = await prisma.tests.findFirst({ where: { teacherDisciplineId: 2 } })
+
+    expect(response.status).toBe(201)
+    expect(test).not.toBeNull()
+  })
+
+  it("return 401 without token", async () => {
+    const data = testsFactory.createTestData()
+
+    const response = await supertest(app).post("/tests").send(data)
+    const test = await prisma.tests.findFirst({ where: { teacherDisciplineId: 2 } })
+
+    expect(response.status).toBe(401)
+    expect(test).toBeNull()
+  })
+
+  it("return 422 with wrong data", async () => {
+    const token = await testsFactory.createToken()
+    const data = {}
+
+    const response = await supertest(app).post("/tests").send(data).set("Authorization", `Bearer ${token}`)
+    const test = await prisma.tests.findFirst({ where: { teacherDisciplineId: 2 } })
+
+    expect(response.status).toBe(422)
+    expect(test).toBeNull()
+  })
+
+  it("return 404 with nonexistent combination teacher-discipline", async () => {
+    const token = await testsFactory.createToken()
+    const data = testsFactory.createTestData()
+
+    const response = await supertest(app)
+      .post("/tests")
+      .send({ ...data, discipline: "Humildade" })
+      .set("Authorization", `Bearer ${token}`)
+    const test = await prisma.tests.findFirst({ where: { teacherDisciplineId: 2 } })
+
+    expect(response.status).toBe(404)
+    expect(test).toBeNull()
+  })
+
+  it("return 404 with nonexistent category", async () => {
+    const token = await testsFactory.createToken()
+    const data = testsFactory.createTestData()
+
+    const response = await supertest(app)
+      .post("/tests")
+      .send({ ...data, category: "null" })
+      .set("Authorization", `Bearer ${token}`)
+    const test = await prisma.tests.findFirst({ where: { teacherDisciplineId: 2 } })
+
+    expect(response.status).toBe(404)
+    expect(test).toBeNull()
   })
 })

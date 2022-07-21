@@ -50,3 +50,16 @@ POST /signin
         "password": "loremipsum" (min 6)
     }
 ```
+
+```yml
+POST /tests (authenticated)
+    - Route to create tests
+    - headers: { "Authorization": "Bearer $token"}
+    - body: {
+        "name": "loremipsum",
+        "pdfUrl": "http://uri",
+        "category": "loremipsum",
+        "discipline": "loremipsum",
+        "teacher": "loremipsum"
+    }
+```
