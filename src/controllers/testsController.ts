@@ -23,3 +23,8 @@ export async function getTestByDiscipline(req: Request, res: Response) {
   const tests = await testsRepository.getTestsByDiscipline()
   res.status(200).send({ tests })
 }
+
+export async function getTestByTeacher(req: Request, res: Response) {
+  const teachers = await testsRepository.getTestsByTeacher()
+  res.status(200).send({ teachers })
+}

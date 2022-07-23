@@ -149,12 +149,12 @@ describe("POST /tests", () => {
   })
 })
 
-describe("GET /tests", () => {
+describe("GET /tests/disciplines", () => {
   it("return 200 and array of tests", async () => {
     const token = await testsFactory.createToken()
     await testsFactory.createTests(token)
 
-    const response = await supertest(app).get("/tests").set("Authorization", `Bearer ${token}`)
+    const response = await supertest(app).get("/tests/disciplines").set("Authorization", `Bearer ${token}`)
 
     expect(response.status).toBe(200)
     expect(response.body.tests).not.toBeUndefined()
@@ -162,9 +162,29 @@ describe("GET /tests", () => {
   })
 
   it("return 401 without token", async () => {
-    const response = await supertest(app).get("/tests")
+    const response = await supertest(app).get("/tests/disciplines")
 
     expect(response.status).toBe(401)
     expect(response.body.tests).toBeUndefined()
+  })
+})
+
+describe("GET /tests/teachers", () => {
+  it("return 200 and array of teachers", async () => {
+    const token = await testsFactory.createToken()
+    await testsFactory.createTests(token)
+
+    const response = await supertest(app).get("/tests/teachers").set("Authorization", `Bearer ${token}`)
+
+    expect(response.status).toBe(200)
+    expect(response.body.teachers).not.toBeUndefined()
+    expect(response.body.teachers[0].TeacherDisciplines[1].Tests[0]).not.toBeUndefined()
+  })
+
+  it("return 401 without token", async () => {
+    const response = await supertest(app).get("/tests/teachers")
+
+    expect(response.status).toBe(401)
+    expect(response.body.teachers).toBeUndefined()
   })
 })
